@@ -589,18 +589,20 @@ public class FormUtil implements ApplicationContextAware {
      * @return the formatted data.
      */
     public static FormData executeElementFormatDataForValidation(Element element, FormData formData) {
-        formData = element.formatDataForValidation(formData);
-        
-        if (element.continueValidation(formData)) {
-            // recurse into children
-            Collection<Element> children = element.getChildren(formData);
-            if (children != null) {
-                for (Element child : children) {
-                    formData = FormUtil.executeElementFormatDataForValidation(child, formData);
+        if (FormUtil.isFormSubmitted(element, formData)) {
+            formData = element.formatDataForValidation(formData);
+
+            if (element.continueValidation(formData)) {
+                // recurse into children
+                Collection<Element> children = element.getChildren(formData);
+                if (children != null) {
+                    for (Element child : children) {
+                        formData = FormUtil.executeElementFormatDataForValidation(child, formData);
+                    }
                 }
+            } else {
+                formData = FormUtil.executeHiddenElementFormatDataForValidation(element, formData);
             }
-        } else {
-            formData = FormUtil.executeHiddenElementFormatDataForValidation(element, formData);
         }
         
         return formData;
@@ -1617,6 +1619,7 @@ public class FormUtil implements ApplicationContextAware {
             // get root form
             Form form = null;
             FormData formData = new FormData();
+            formData.addFormResult(FormUtil.FORM_RESULT_LOAD_ALL_DATA, "true");
             formData.setPrimaryKeyValue(primaryKeyValue);
             FormDefinition formDef = formDefinitionDao.loadById(formDefId, appDef);
             if (formDef != null) {
