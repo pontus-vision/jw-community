@@ -1144,6 +1144,10 @@ FormBuilder = {
                 $(copiedElement).html("");
             }
             
+            if ($(copiedElement).hasClass("form-section")) {
+                FormBuilder.updateCopiedId(copiedElement);
+            }
+            
             if (position === "before") {
                 $(element).before(copiedElement);
             } else if (position === "after") {
@@ -1154,22 +1158,18 @@ FormBuilder = {
             
             // decorate all elements
             if ($(copiedElement).hasClass("form-section")) {
-                FormBuilder.updateCopiedId(copiedElement);
                 FormBuilder.decorateSection(copiedElement);
             
                 $(copiedElement).find(".form-column").each(function(index, obj) {
-                    FormBuilder.updateCopiedId(obj);
                     FormBuilder.decorateColumn(obj);
                 });
 
                 $(copiedElement).find(".form-cell").each(function(index, obj) {
-                    FormBuilder.updateCopiedId(obj);
                     FormBuilder.updateElementDOM(obj);
                     FormBuilder.refreshElementTemplate(obj);
                     FormBuilder.decorateElement(obj);
                 });
             } else {
-                FormBuilder.updateCopiedId(copiedElement);
                 FormBuilder.updateElementDOM(copiedElement);
                 FormBuilder.refreshElementTemplate(copiedElement);
                 FormBuilder.decorateElement(copiedElement);
