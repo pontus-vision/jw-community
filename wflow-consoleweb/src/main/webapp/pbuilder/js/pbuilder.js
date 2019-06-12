@@ -2434,14 +2434,14 @@ ProcessBuilder.Designer = {
                             if (matches.length > 1) {
                                 deadlineLimit = matches[1].substring(1, matches[1].length-2);
                             }
-                        } else if (deadlineCondition.indexOf("yyyy-MM-dd") >= 0) {
-                            durationUnit = "1";
+                        } else if (deadlineCondition.indexOf("yyyy-MM-dd HH:mm") >= 0) {
+                            durationUnit = "2";
                             var matches = deadlineCondition.match("parse\(.+\)");
                             if (matches.length > 1) {
                                 deadlineLimit = matches[1].substring(1, matches[1].length-2);
                             }
-                        } else if (deadlineCondition.indexOf("yyyy-MM-dd HH:mm") >= 0) {
-                            durationUnit = "2";
+                        } else if (deadlineCondition.indexOf("yyyy-MM-dd") >= 0) {
+                            durationUnit = "1";
                             var matches = deadlineCondition.match("parse\(.+\)");
                             if (matches.length > 1) {
                                 deadlineLimit = matches[1].substring(1, matches[1].length-2);
@@ -3712,12 +3712,21 @@ ProcessBuilder.Designer = {
 
         // add participants
         xml += '<xpdl:Participants>';
+        
+        var existingSwimlaneIds = [];
+        for (var id in model.processes) {
+            var swimlaneIds = model.processes[id].swimlanes.split(";");
+            existingSwimlaneIds = existingSwimlaneIds.concat(swimlaneIds);
+        }
+        
         var participants = model.participants;
         for (var id in participants) {
-            var participant = participants[id];
-            xml += '<xpdl:Participant Id="' + participant.id + '" Name="' + ProcessBuilder.Util.encodeXML(participant.name) + '">\
-                    <xpdl:ParticipantType Type="' + ProcessBuilder.Util.preventUndefined(participant.type) + '"/>\
-                    </xpdl:Participant>';
+            if ($.inArray(id, existingSwimlaneIds) !== -1) {
+                var participant = participants[id];
+                xml += '<xpdl:Participant Id="' + participant.id + '" Name="' + ProcessBuilder.Util.encodeXML(participant.name) + '">\
+                        <xpdl:ParticipantType Type="' + ProcessBuilder.Util.preventUndefined(participant.type) + '"/>\
+                        </xpdl:Participant>';
+            }
         }
         
         if (duplicateProcessId !== undefined) {
